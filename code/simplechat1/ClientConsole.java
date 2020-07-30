@@ -66,6 +66,9 @@ public class ClientConsole implements ChatIF {
    * it to the client's message handler.
    */
   public void accept(boolean isTestLocation, boolean isLabLocation) {
+    String sendToServer;
+    boolean isViableTestNumber;
+    int testNumber;
     try {
       BufferedReader fromConsole = new BufferedReader(new InputStreamReader(System.in));
       String message;
@@ -75,8 +78,19 @@ public class ClientConsole implements ChatIF {
       while (run) {
         message = fromConsole.readLine();
         if (message != null) {
-          if (message.substring(0,8).equals("#newTest")) {
-            System.out.println("new Test");
+          if (isTestLocation && message.substring(0,8).equals("#newTest")) {
+            isViableTestNumber = false;
+            while(!isViableTestNumber){
+              System.out.println("Please Enter Test number");
+              message = fromConsole.readLine();
+              try{
+                testNumber = Integer.parseInt(message);
+                isViableTestNumber = true;
+              }
+              catch (Exception e){
+                System.out.println("Invalid test number. Please try again");
+              }
+            }
           }
           else if (message.charAt(0) == '#'){
             command(message.substring(1));
@@ -293,7 +307,7 @@ public class ClientConsole implements ChatIF {
       message = fromConsole.readLine();
       clientID += ":"+message;
 
-      if(!isTestLocation){
+      if(isLabLocation){
         System.out.println(">Please enter daily lab testing quota");
         message = fromConsole.readLine();
         clientID += ":"+message;
