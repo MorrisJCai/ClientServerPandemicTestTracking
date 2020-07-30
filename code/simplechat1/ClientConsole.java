@@ -68,6 +68,7 @@ public class ClientConsole implements ChatIF {
   public void accept(boolean isTestLocation, boolean isLabLocation) {
     String sendToServer;
     boolean isViableTestNumber;
+    boolean isViableResult;
     int testNumber;
     try {
       BufferedReader fromConsole = new BufferedReader(new InputStreamReader(System.in));
@@ -78,18 +79,65 @@ public class ClientConsole implements ChatIF {
       while (run) {
         message = fromConsole.readLine();
         if (message != null) {
-          if (isTestLocation && message.substring(0,8).equals("#newTest")) {
+          if (isTestLocation && message.length() >= 7 && message.substring(0,7).equals("NewTest")) {
             isViableTestNumber = false;
+            sendToServer = "NewTest";
+
             while(!isViableTestNumber){
-              System.out.println("Please Enter Test number");
+              System.out.println("Please Scan Test number");
               message = fromConsole.readLine();
               try{
                 testNumber = Integer.parseInt(message);
                 isViableTestNumber = true;
+                sendToServer += ":"+message;
               }
               catch (Exception e){
                 System.out.println("Invalid test number. Please try again");
               }
+            }
+
+            System.out.println("Please Enter Patient Name");
+            message = fromConsole.readLine();
+            sendToServer += ":" + message;
+            System.out.println("Please Enter Patient Phone Number");
+            message = fromConsole.readLine();
+            sendToServer += ":" + message;
+            client.handleMessageFromClientUI(sendToServer);
+          }
+          else if (isLabLocation && message.length() >= 10 && message.substring(0,10).equals("TestResult")){
+            isViableTestNumber = false;
+            isViableResult = false;
+            sendToServer = "TestResult";
+
+            while(!isViableTestNumber){
+              System.out.println("Please Scan Test number");
+              message = fromConsole.readLine();
+              try{
+                testNumber = Integer.parseInt(message);
+                isViableTestNumber = true;
+                sendToServer += ":"+message;
+              }
+              catch (Exception e){
+                System.out.println("Invalid test number. Please try again");
+              }
+            }
+            
+            
+            while(!isViableResult){
+              System.out.println("Please Enter Result (Positive/Negative)");
+              message = fromConsole.readLine();
+              if(message.equals("True") || message.equals("true")){
+                sendToServer += ":False";
+                isViableResult = true;
+              }
+              else if(message.equals("False") || message.equals("false")){
+                sendToServer += ":False";
+                isViableResult = true;
+              }
+              else{
+                System.out.println("Invaid Input: Please try again.");
+              }
+              
             }
           }
           else if (message.charAt(0) == '#'){
