@@ -65,7 +65,7 @@ public class ClientConsole implements ChatIF {
    * This method waits for input from the console. Once it is received, it sends
    * it to the client's message handler.
    */
-  public void accept() {
+  public void accept(boolean isTestLocation, boolean isLabLocation) {
     try {
       BufferedReader fromConsole = new BufferedReader(new InputStreamReader(System.in));
       String message;
@@ -75,7 +75,10 @@ public class ClientConsole implements ChatIF {
       while (run) {
         message = fromConsole.readLine();
         if (message != null) {
-          if (message.charAt(0) == '#') {
+          if (message.substring(0,8).equals("#newTest")) {
+            System.out.println("new Test");
+          }
+          else if (message.charAt(0) == '#'){
             command(message.substring(1));
           } else {
             client.handleMessageFromClientUI(message);
@@ -144,7 +147,7 @@ public class ClientConsole implements ChatIF {
           System.out.println("Client already logged in");
         } else {
           ClientConsole chat = new ClientConsole(internalLoginID, internalHost, internalPort);
-          chat.accept();
+          //chat.accept();
         }
         break;
 
@@ -233,7 +236,8 @@ public class ClientConsole implements ChatIF {
    */
   public static void main(String[] args) {
     boolean hasLocation = false;
-    boolean isTestLocation = true;
+    boolean isTestLocation = false;
+    boolean isLabLocation = false;
 
     String host = "";
     String clientID = "";
@@ -255,39 +259,46 @@ public class ClientConsole implements ChatIF {
       String message;
 
       while (!hasLocation) {
-        message = fromConsole.readLine();
-        
+        System.out.println(">Please enter directive");
+        message = fromConsole.readLine();        
         if (message != null) {
-          if (message.length() >= 12 &&  message.substring(0,12).equals("TestLocation")) {
+          if (message.length() >= 12 &&  message.substring(0,13).equals("TestLocation:")) {
             hasLocation = true;
             isTestLocation = true;
             clientID = message;
           }
-          else if(message.length() >= 11 &&  message.substring(0,11).equals("LabLocation")){
+          else if(message.length() >= 11 &&  message.substring(0,12).equals("LabLocation:")){
             hasLocation = true;
-            isTestLocation = false;
+            isLabLocation = true;
+            clientID = message;
+          }
+          else if(message.length() >= 19 &&  (message.substring(0,19).equals("LabAndTestLocation:") || message.substring(0,19).equals("TestAndLabLocation:"))){
+            hasLocation = true;
+            isTestLocation = true;
+            isLabLocation = true;
             clientID = message;
           }
           else{
-            System.out.println("Invalid input");
+            System.out.println(">Invalid input.");
+            System.out.println(message.substring(0,20).equals("TestAndLabLocation:"));
+            System.out.println(message.substring(0,20));
           }
         }
       }
-      System.out.println("Please enter location address");
+      System.out.println(">Please enter location address");
       message = fromConsole.readLine();
       clientID += ":"+message;
   
-      System.out.println("Please enter location Postal Code");
+      System.out.println(">Please enter location Postal Code");
       message = fromConsole.readLine();
       clientID += ":"+message;
 
       if(!isTestLocation){
-        System.out.println("Please enter daily lab testing quota");
+        System.out.println(">Please enter daily lab testing quota");
         message = fromConsole.readLine();
         clientID += ":"+message;
       }
     }   
-
     catch (Exception ex) {
       System.out.println("Unexpected error while reading from console!");
     }
@@ -295,8 +306,9 @@ public class ClientConsole implements ChatIF {
     
     try {
       ClientConsole chat = new ClientConsole(clientID, host, port);
-      chat.accept();
-    } catch (Exception Ex) {
+      chat.accept(isTestLocation, isLabLocation);
+    } 
+    catch (Exception Ex) {
       System.out.println("ERROR - Unable to Connect to server.");
     }
 
