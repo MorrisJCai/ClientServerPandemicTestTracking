@@ -236,6 +236,7 @@ public class ClientConsole implements ChatIF {
     boolean isTestLocation = true;
 
     String host = "";
+    String clientID = "";
     int port = DEFAULT_PORT; // The port number
 
     try {
@@ -255,37 +256,51 @@ public class ClientConsole implements ChatIF {
 
       while (!hasLocation) {
         message = fromConsole.readLine();
-        System.out.println(message.substring(0,12).equals("TestLocation"));
+        
         if (message != null) {
-          if (message.length() >= 12 &&  message.substring(0,11).equals("TestLocation")) {
-              hasLocation = true;
-              isTestLocation = true;
+          if (message.length() >= 12 &&  message.substring(0,12).equals("TestLocation")) {
+            hasLocation = true;
+            isTestLocation = true;
+            clientID = message;
           }
-          else if(message.length() >= 11 &&  message.substring(0,1).equals("LabLocation")){
+          else if(message.length() >= 11 &&  message.substring(0,11).equals("LabLocation")){
             hasLocation = true;
             isTestLocation = false;
+            clientID = message;
           }
           else{
-            System.out.println("Invalid input")
+            System.out.println("Invalid input");
           }
         }
       }
-      System.out.println("Has Location Data");
-    } 
+      System.out.println("Please enter location address");
+      message = fromConsole.readLine();
+      clientID += ":"+message;
+  
+      System.out.println("Please enter location Postal Code");
+      message = fromConsole.readLine();
+      clientID += ":"+message;
+
+      if(!isTestLocation){
+        System.out.println("Please enter daily lab testing quota");
+        message = fromConsole.readLine();
+        clientID += ":"+message;
+      }
+    }   
+
     catch (Exception ex) {
       System.out.println("Unexpected error while reading from console!");
     }
-  
-    /*
+    
+    
     try {
-      String clientID = args[0];
       ClientConsole chat = new ClientConsole(clientID, host, port);
       chat.accept();
     } catch (Exception Ex) {
-      System.out.println("ERROR - No login ID specified.  Connection aborted.");
+      System.out.println("ERROR - Unable to Connect to server.");
     }
 
-    
+    /*
      * System.out.
      * println("Please specify port number (If blank, default port 5555 will be used)"
      * ); try { String input = reader.readLine(); port = Integer.parseInt(input); }
