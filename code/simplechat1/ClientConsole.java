@@ -79,12 +79,15 @@ public class ClientConsole implements ChatIF {
       while (run) {
         message = fromConsole.readLine();
         if (message != null) {
+
+          //Handles cases for New tests
           if (isTestLocation && message.length() >= 7 && message.substring(0,7).equals("NewTest")) {
             isViableTestNumber = false;
             sendToServer = "NewTest";
 
+            //Tests for viable test number
             while(!isViableTestNumber){
-              System.out.println("Please Scan Test number");
+              System.out.println(">Please Scan Test number");
               message = fromConsole.readLine();
               try{
                 testNumber = Integer.parseInt(message);
@@ -92,29 +95,31 @@ public class ClientConsole implements ChatIF {
                 sendToServer += ":"+message;
               }
               catch (Exception e){
-                System.out.println("Invalid test number. Please try again");
+                System.out.println(">Invalid test number. Please try again");
               }
             }
 
-            System.out.println("Please Enter Patient Name");
+            //Gathers other necessary information about the patient
+            System.out.println(">Please Enter Patient Name");
             message = fromConsole.readLine();
             sendToServer += ":" + message;
-            System.out.println("Please Enter Patient Phone Number");
+            System.out.println(">Please Enter Patient Phone Number");
             message = fromConsole.readLine();
             sendToServer += ":" + message;
+
+            //Sends required information to server
             client.handleMessageFromClientUI(sendToServer);
           }
 
-
-
-
+          //Handles cases for updated tests
           else if (isLabLocation && message.length() >= 10 && message.substring(0,10).equals("TestResult")){
             isViableTestNumber = false;
             isViableResult = false;
             sendToServer = "TestResult";
 
+            //Check that the updated result is a viable test number
             while(!isViableTestNumber){
-              System.out.println("Please Scan Test number");
+              System.out.println(">Please Scan Test number");
               message = fromConsole.readLine();
               try{
                 testNumber = Integer.parseInt(message);
@@ -122,13 +127,13 @@ public class ClientConsole implements ChatIF {
                 sendToServer += ":"+message;
               }
               catch (Exception e){
-                System.out.println("Invalid test number. Please try again");
+                System.out.println(">Invalid test number. Please try again");
               }
             }
             
-            
+            //Checks that the result formatting is correct
             while(!isViableResult){
-              System.out.println("Please Enter Result (Positive/Negative)");
+              System.out.println(">Please Enter Result (Positive/Negative)");
               message = fromConsole.readLine();
               if(message.equals("Positive") || message.equals("positive")){
                 sendToServer += ":Positive";
@@ -139,20 +144,13 @@ public class ClientConsole implements ChatIF {
                 isViableResult = true;
               }
               else{
-                System.out.println("Invaid Input: Please try again.");
+                System.out.println(">Invaid Input: Please try again.");
               }
             }
             client.handleMessageFromClientUI(sendToServer);
           }
 
-
-
-
-
-
-
-
-
+          //Handles server commands
           else if (message.charAt(0) == '#'){
             command(message.substring(1));
           } else {
@@ -262,21 +260,21 @@ public class ClientConsole implements ChatIF {
             // This is in a try/catch statement to allow port change before connection is
             // established
             if (isConnected) {
-              System.out.println("Client currently logged in. Please log off before changing port.");
+              System.out.println(">Client currently logged in. Please log off before changing port.");
             } else {
               internalPort = changePort;
-              System.out.println("Port set to: " + internalPort);
+              System.out.println(">Port set to: " + internalPort);
             }
           }
 
           catch (Exception e) {
-            System.out.println("Invalid port number");
+            System.out.println(">Invalid port number");
           }
 
         }
 
         else {
-          System.out.println("Command unknown, please try again");
+          System.out.println(">Command unknown, please try again");
         }
     }
 
@@ -374,7 +372,7 @@ public class ClientConsole implements ChatIF {
       }
     }   
     catch (Exception ex) {
-      System.out.println("Unexpected error while reading from console!");
+      System.out.println(">Unexpected error while reading from console!");
     }
     
     
@@ -383,7 +381,7 @@ public class ClientConsole implements ChatIF {
       chat.accept(isTestLocation, isLabLocation);
     } 
     catch (Exception Ex) {
-      System.out.println("ERROR - Unable to Connect to server.");
+      System.out.println(">ERROR - Unable to Connect to server.");
     }
 
     /*

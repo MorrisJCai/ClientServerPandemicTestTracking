@@ -5,6 +5,7 @@ public class Test{
     private TestLocation testLocation;
     private LabLocation labLocation;
     private boolean testResult;
+    private boolean hasResults = false;
 
     public Test(String testNumber, String patientName, String patientPhonenNumber){
         testID = testNumber;
@@ -34,6 +35,7 @@ public class Test{
 
     public void setResult(boolean result){
         testResult = result;
+        hasResults = true;
     }
     
     public boolean getResult(){
@@ -41,11 +43,12 @@ public class Test{
     }
 
     public String toString(){
-        try{
-            return "[TestID: " +testID + " : " + testResult + " for "  + testPatientName + "/" + testPatientPhoneNumber+ "]";
+        if(hasResults){
+            if(testResult){
+                return "[TestID: " +testID + " : Positive for "  + testPatientName + "/" + testPatientPhoneNumber+ "]";
+            }
+            return "[TestID: " +testID + " : Negative for "  + testPatientName + "/" + testPatientPhoneNumber+ "]";
         }
-        catch(Exception Ex){
-            return "[TestID: " +testID + " for "  + testPatientName + "/" + testPatientPhoneNumber + "]";
-        }
+        return "[TestID: " +testID + " for "  + testPatientName + "/" + testPatientPhoneNumber + "]";
     }
 }

@@ -71,9 +71,11 @@ public class EchoServer extends AbstractServer {
   // Instance methods ************************************************
 
 
-
-
-
+/**
+   * This method handles any displaying test information.
+   *
+   * @param testNumber    The test number that is to be displayed
+   */
   public void displayTestInfo(String testNumber){
     try{
       Test test = tests.get(testNumber);
@@ -83,6 +85,8 @@ public class EchoServer extends AbstractServer {
       System.out.println("Error getting test for test number. It does not exist in server database.");
     }
   }
+
+
   /**
    * This method handles any messages received from the client.
    *
@@ -106,26 +110,31 @@ public class EchoServer extends AbstractServer {
       try {
         client.getInfo("locationID").toString();
         client.sendToClient("Only one login attempt is allowed per client.");
-      } catch (Exception ex) {
+      } 
+      
+      //Login request.
+      catch (Exception ex) {
 
+        
         String interim = msg.toString().substring(8, msg.toString().length() - 1);
         String[] arr = interim.split(":",0);
-        for(String k : arr){
-          System.out.println(k);
-
-        }
         client.setInfo("locationID", arr[0]+":"+arr[1]);
+
+        //Just a test location
         if(arr[0].equals("TestLocation")){
           TestLocation testLocation = new TestLocation(arr[1],arr[2],arr[3]);
           testLocations.add(testLocation);
           client.setInfo("Type",0);
-          
         }
+
+        //Just a lab location
         else if(arr[0].equals("LabLocation")){
           LabLocation labLocation = new LabLocation(arr[1],arr[2],arr[3],Integer.parseInt(arr[4]));
           labLocations.add(labLocation);
           client.setInfo("Type",2);
         }
+
+        //Both a test and lab location
         if(arr[0].equals("LabAndTestLocation:") || arr[0].equals("TestAndLabLocation:")){
           TestLocation testLocation = new TestLocation(arr[1],arr[2],arr[3]);
           testLocations.add(testLocation);
@@ -133,26 +142,24 @@ public class EchoServer extends AbstractServer {
           labLocations.add(labLocation);
           client.setInfo("Type",1);
         }
-        System.out.println(client.getInfo("Type"));
       }
     }
 
     // Handles cases that are not login attempts
     else {
-      // Checks that the client has logged in. If not,
+      // Checks that the client has logged in. If not, tell them that they must login first.
       try {
         String s = client.getInfo("locationID").toString();
 
+        //Handles cases of new tests
         if(msg.toString().length() >= 7 && msg.toString().substring(0,7).equals("NewTest")){
           String[] arr = msg.toString().split(":",0);
           Test test = new Test(arr[1],arr[2],arr[3]);
-          //System.out.println(test.toString());
-          System.out.println(arr[1]);
-          System.out.println(test);
           tests.put(arr[1], test);
           testKeys.add(arr[1]);
         }
         
+        //Handles cases of updating test results
         else if(msg.toString().length() >= 10 && msg.toString().substring(0,10).equals("TestResult")){
           String[] arr = msg.toString().split(":",0);
           String key = arr[1];
@@ -169,7 +176,6 @@ public class EchoServer extends AbstractServer {
             }
             tests.replace(key,test);
           }
-          System.out.println(tests.get(key));
         }
 
         System.out.println("Message received: " + msg + " from; " + client.getInfo("locationID"));
