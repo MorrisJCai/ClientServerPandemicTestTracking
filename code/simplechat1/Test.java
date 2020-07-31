@@ -1,24 +1,35 @@
 public class Test{
-    private int testID;
+    private String testID;
+    private String testPatientName;
+    private String testPatientPhoneNumber;
     private TestLocation testLocation;
     private LabLocation labLocation;
+    private boolean testResult;
 
-    public Test(int testNumber, TestLocation location){
+    public Test(String testNumber, String patientName, String patientPhonenNumber){
         testID = testNumber;
         testLocation = testLocation;
-        
+        testPatientName = patientName;
+        testPatientPhoneNumber = patientPhonenNumber;
     }
 
     public void setLabLocation(LabLocation location){
         labLocation = location;
     }
 
-    public TestLocation getTestLocation(){
-        return testLocation;
-    }
+    
 
     public LabLocation getLabLocation(){
         return labLocation;
+    }
+
+    public String getPatientName(){
+        return testPatientName;
+    }
+
+
+    public String getPatientPhoneNumber(){
+        return testPatientPhoneNumber;
     }
 
     public void setResult(boolean result){
@@ -26,10 +37,15 @@ public class Test{
     }
     
     public boolean getResult(){
-        return result;
+        return testResult;
     }
 
     public String toString(){
-        return "[TestID: " + testID.toString() + "| TestLocation: " + testLocationName + " at "+ testLocationAddress + ", "+testLocationPostal+"| Result: "+testResult.toString()+"]";
+        try{
+            return "[TestID: " +testID + " : " + testResult + " for "  + testPatientName + "/" + testPatientPhoneNumber+ "]";
+        }
+        catch(Exception Ex){
+            return "[TestID: " +testID + " for "  + testPatientName + "/" + testPatientPhoneNumber + "]";
+        }
     }
 }

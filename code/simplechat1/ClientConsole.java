@@ -104,6 +104,10 @@ public class ClientConsole implements ChatIF {
             sendToServer += ":" + message;
             client.handleMessageFromClientUI(sendToServer);
           }
+
+
+
+
           else if (isLabLocation && message.length() >= 10 && message.substring(0,10).equals("TestResult")){
             isViableTestNumber = false;
             isViableResult = false;
@@ -126,20 +130,29 @@ public class ClientConsole implements ChatIF {
             while(!isViableResult){
               System.out.println("Please Enter Result (Positive/Negative)");
               message = fromConsole.readLine();
-              if(message.equals("True") || message.equals("true")){
-                sendToServer += ":False";
+              if(message.equals("Positive") || message.equals("positive")){
+                sendToServer += ":Positive";
                 isViableResult = true;
               }
-              else if(message.equals("False") || message.equals("false")){
-                sendToServer += ":False";
+              else if(message.equals("Negative") || message.equals("negative")){
+                sendToServer += ":Negative";
                 isViableResult = true;
               }
               else{
                 System.out.println("Invaid Input: Please try again.");
               }
-              
             }
+            client.handleMessageFromClientUI(sendToServer);
           }
+
+
+
+
+
+
+
+
+
           else if (message.charAt(0) == '#'){
             command(message.substring(1));
           } else {
@@ -342,8 +355,7 @@ public class ClientConsole implements ChatIF {
           }
           else{
             System.out.println(">Invalid input.");
-            System.out.println(message.substring(0,20).equals("TestAndLabLocation:"));
-            System.out.println(message.substring(0,20));
+            
           }
         }
       }

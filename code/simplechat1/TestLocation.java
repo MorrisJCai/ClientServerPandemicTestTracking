@@ -19,11 +19,11 @@ public class TestLocation{
     }
 
     public String getTestlocationnPostal(){
-        return locationPostal
+        return locationPostal;
     }
 
     public String toString(){
-        return "[TestLocation: " + testLocationName + " at "+ locationAddress + ", "+locationPostal"]";
+        return "[TestLocation: " + locationName + " at "+ locationAddress + ", "+ locationPostal + "]";
     }
 
 }

@@ -1,6 +1,6 @@
 
 
-public class LabLocation implements Tes lab{
+public class LabLocation{
     private String labName;
     private String labAddress;
     private String labPostal;
@@ -24,7 +24,7 @@ public class LabLocation implements Tes lab{
     }
 
     public String getLabPostal(){
-        return labPostal
+        return labPostal;
     }
 
     public int getLabCapacity(){
@@ -44,12 +44,12 @@ public class LabLocation implements Tes lab{
         labUsage++;
     }
 
-    public boolean canTestMore{
+    public boolean canTestMore(){
         return labUsage < labCapacity;
     }
 
     public String toString(){
-        return "[Tes lab: " + tes labName + " at "+ labAddress + ", " labPostal"]";
+        return "[Tes lab: " + labName + " at "+ labAddress + ", " + labPostal+"]";
     }
 
 }

@@ -4,6 +4,8 @@
 
 import java.io.*;
 import ocsf.server.*;
+import java.util.ArrayList;
+import java.util.HashMap;
 
 /**
  * This class overrides some of the methods in the abstract superclass in order
@@ -23,7 +25,10 @@ public class EchoServer extends AbstractServer {
    * The default port to listen on.
    */
   final public static int DEFAULT_PORT = 5555;
-
+  private ArrayList<TestLocation> testLocations = new ArrayList<TestLocation>();
+  private ArrayList<LabLocation> labLocations = new ArrayList<LabLocation>();
+  private HashMap<String,Test> tests = new HashMap<String,Test>();
+  private ArrayList<String> testKeys = new ArrayList<String>();
   // Constructors ****************************************************
 
   /**
@@ -65,6 +70,19 @@ public class EchoServer extends AbstractServer {
 
   // Instance methods ************************************************
 
+
+
+
+
+  public void displayTestInfo(String testNumber){
+    try{
+      Test test = tests.get(testNumber);
+      System.out.println(test.toString());
+    }
+    catch (Exception ex){
+      System.out.println("Error getting test for test number. It does not exist in server database.");
+    }
+  }
   /**
    * This method handles any messages received from the client.
    *
@@ -86,11 +104,36 @@ public class EchoServer extends AbstractServer {
       // Checks if the client has already logged in. If so, doesn't allow a second
       // login
       try {
-        client.getInfo("loginID").toString();
+        client.getInfo("locationID").toString();
         client.sendToClient("Only one login attempt is allowed per client.");
       } catch (Exception ex) {
-        Object loginID = msg.toString().substring(8, msg.toString().length() - 1);
-        client.setInfo("loginID", loginID);
+
+        String interim = msg.toString().substring(8, msg.toString().length() - 1);
+        String[] arr = interim.split(":",0);
+        for(String k : arr){
+          System.out.println(k);
+
+        }
+        client.setInfo("locationID", arr[0]+":"+arr[1]);
+        if(arr[0].equals("TestLocation")){
+          TestLocation testLocation = new TestLocation(arr[1],arr[2],arr[3]);
+          testLocations.add(testLocation);
+          client.setInfo("Type",0);
+          
+        }
+        else if(arr[0].equals("LabLocation")){
+          LabLocation labLocation = new LabLocation(arr[1],arr[2],arr[3],Integer.parseInt(arr[4]));
+          labLocations.add(labLocation);
+          client.setInfo("Type",2);
+        }
+        if(arr[0].equals("LabAndTestLocation:") || arr[0].equals("TestAndLabLocation:")){
+          TestLocation testLocation = new TestLocation(arr[1],arr[2],arr[3]);
+          testLocations.add(testLocation);
+          LabLocation labLocation = new LabLocation(arr[1],arr[2],arr[3],Integer.parseInt(arr[4]));
+          labLocations.add(labLocation);
+          client.setInfo("Type",1);
+        }
+        System.out.println(client.getInfo("Type"));
       }
     }
 
@@ -98,14 +141,45 @@ public class EchoServer extends AbstractServer {
     else {
       // Checks that the client has logged in. If not,
       try {
-        client.getInfo("loginID").toString();
-        System.out.println("Message received: " + msg + " from; " + client.getInfo("loginID"));
-        client.sendToClient(client.getInfo("loginID").toString() + "> " + msg);
+        String s = client.getInfo("locationID").toString();
+
+        if(msg.toString().length() >= 7 && msg.toString().substring(0,7).equals("NewTest")){
+          String[] arr = msg.toString().split(":",0);
+          Test test = new Test(arr[1],arr[2],arr[3]);
+          //System.out.println(test.toString());
+          System.out.println(arr[1]);
+          System.out.println(test);
+          tests.put(arr[1], test);
+          testKeys.add(arr[1]);
+        }
+        
+        else if(msg.toString().length() >= 10 && msg.toString().substring(0,10).equals("TestResult")){
+          String[] arr = msg.toString().split(":",0);
+          String key = arr[1];
+          if(!tests.containsKey(key)){
+            client.sendToClient("SERVER MSG: Invalid Key. Test Key not in System.");
+          }
+          else{
+            Test test = tests.get(key);
+            if (arr[2].toString().equals("Positive")){
+              test.setResult(true);
+            }
+            else{
+              test.setResult(false);
+            }
+            tests.replace(key,test);
+          }
+          System.out.println(tests.get(key));
+        }
+
+        System.out.println("Message received: " + msg + " from; " + client.getInfo("locationID"));
+        client.sendToClient(client.getInfo("locationID").toString() + "> " + msg);
       }
 
       //If the first client is not already logged in, which would trigger an exception in client.getInfo, 
       // tell the client that the login command must be the first entry
       catch (Exception ex) {
+        System.out.println(ex.toString());
         try {
           client.sendToClient("SERVER MSG> First command must be #login, please try again");
           client.close();

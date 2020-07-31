@@ -54,8 +54,8 @@ public class ServerConsole implements ChatIF {
                     }
 
                     else {
-                        display(message);
-                        server.sendToAllClients("SERVER MSG> " + message);
+                        server.displayTestInfo(message);
+                        
                     }
                 } else {
                     display(message);
